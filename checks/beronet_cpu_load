@@ -7,13 +7,9 @@ def inventory_beronet_cpu_load(info):
 	return
 
 def check_beronet_cpu_load(item, params, info):
-	print params
 	warn,crit = params
-	print "WARN-Level:"+str(warn)
-	print "CRIT-Level:"+str(crit)
 	for line in info:
 		cpuload = int(line[0])
-		print cpuload
 		perfdata = [ ( "Cpuload", cpuload, warn, crit ) ]
 		if cpuload > crit:
 			return 2, "CRIT - CPU Load "+str(cpuload)+" %",perfdata
