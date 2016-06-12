@@ -1,0 +1,48 @@
+#!/usr/bin/python
+
+# Author: Markus Sachs <m.sachs@allforit.de>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+# set default value of variable (user can override in main.mk)
+
+
+snmp_info["beronet_ram_used"] = ( ".1.3.6.1.4.1.29886.0.12.1.1", [ "1.0", "2.0" ] )
+beronet_ram_used_default_values = (80, 90)
+
+def inventory_beronet_ram_used(info):
+	yield "RAM Usage","beronet_ram_used_default_values"
+	return
+
+def check_beronet_ram_used(item, params, info):
+	warn,crit = params
+	for line in info:
+		ram_total = int(line[0])/1024
+		ram_free = int(line[1])/1024
+		ram_used = (ram_free *100)/ram_total
+		perfdata = [ ( "RAM total", ram_total ),("RAM Free", ram_free),("RAM Used",ram_used,warn,crit) ]
+		if ram_used > crit:
+			return 2, "CRIT - MEM Used "+str(ram_used)+" % RAM-Total: "+str(ram_total)+" MB RAM-Free: "+str(ram_free)+" MB",perfdata
+		elif ram_used > warn:
+			return 1, "WARN - Mem Used "+str(ram_used)+" % RAM-Total: "+str(ram_total)+" MB RAM-Free: "+str(ram_free)+" MB",perfdata
+		else:
+			return 0, "OK - Mem Used "+str(ram_used)+" %  RAM-Total: "+str(ram_total)+" MB RAM-Free: "+str(ram_free)+" MB",perfdata
+
+check_info["beronet_ram_used"] = {
+    "check_function"        : check_beronet_ram_used,
+    "inventory_function"    : inventory_beronet_ram_used,
+    "service_description"   : "Beronet",
+	'has_perfdata'			: True,
+    "snmp_scan_function"    : lambda oid: "berofix voip gateway" in oid(".1.3.6.1.2.1.1.1.0").lower() and oid('.1.3.6.1.4.1.29886.0.12.*') != None,
+}
