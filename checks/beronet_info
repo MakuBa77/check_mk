@@ -1,0 +1,25 @@
+#!/usr/bin/python
+snmp_info["beronet_info"] = ( ".1.3.6.1.4.1.29886.0", [ "2.0", "3.0", "4.0", "5.0", "6.0" ] )
+
+
+def inventory_beronet_info(info):
+	yield "Info",None
+	return
+
+def check_beronet_info(item, params, info):
+	for line in info:
+		serial = line[0]
+		hwrevision = line[1]
+		rootfs = line[2]
+		firmware = line[3]
+		ffpga = line[4]
+		
+	 	return 0, "Seriennummer: "+serial+" HW-Revision: "+hwrevision+" RootFS: "+rootfs+" Firmware: "+firmware+" FFPGA: "+ffpga
+
+check_info["beronet_info"] = {
+    "check_function"        : check_beronet_info,
+    "inventory_function"    : inventory_beronet_info,
+    "service_description"   : "Beronet",
+    "snmp_info"             : ( '.1.3.6.1.4.1.29886.0.2', [ 0 ] ),
+    "snmp_scan_function"    : lambda oid: "berofix voip gateway" in oid(".1.3.6.1.2.1.1.1.0").lower() and  oid('.1.3.6.1.4.1.29886.0.2.0') != None,
+}

@@ -1,0 +1,45 @@
+#!/usr/bin/python
+snmp_info["beronet_isdn_portstate"] = ( '.1.3.6.1.4.1.29886.0.10.4.1.1', [ '1', '4', '3' ] )
+
+
+def inventory_beronet_isdn_portstate(info):
+	yield "ISDN-Status",None
+	return 
+
+def check_beronet_isdn_portstate(item, params, info):
+   	#print "INFO"
+	#print info
+	isdnstate = 1
+	portanzahl = 0
+	l1linkup = 0
+	#for line in info:
+		
+	#	portanzahl += 1
+	#print portanzahl
+	for line in info:
+		#print "LINE"
+		#print line
+		portstate = line[0]
+		l1link = line[1]
+		l1link = line[2]
+		if l1link == 'DOWN' and portstate == 'TE':
+			isdnstate = 0
+			portanzahl += 1
+		elif l1link =='UP' and portstate == 'TE':
+			l1linkup += 1
+			isdnstate = 1
+			portanzahl += 1
+	if isdnstate == 0:
+		return (2, "CRITICAL - ISDN Signal DOWN "+str(portanzahl)+" von "+str(l1linkup)+" Ports aktiv" )
+	elif portanzahl != l1linkup:
+		return (1, "WARNING - ISDN Signal "+str(portanzahl)+" von "+str(l1linkup)+" Ports aktiv")
+	else:
+		return (0, "OK - ISDN Signal "+str(portanzahl)+" von "+str(l1linkup)+" Ports aktiv")
+
+check_info["beronet_isdn_portstate"] = {
+    "check_function"        : check_beronet_isdn_portstate,
+    "inventory_function"    : inventory_beronet_isdn_portstate,
+    "service_description"   : "%s",
+    "snmp_info"             : ( '.1.3.6.1.4.1.29886.0.10', [ '5.1.1.1', '4.1.1.1', '4.1.1.3', '4.1.1.4' ] ),
+	"snmp_scan_function"	: lambda oid: "berofix voip gateway" in oid(".1.3.6.1.2.1.1.1.0").lower() and oid('.1.3.6.1.4.1.29886.0.10.4.1.1.1.*') != None,
+}
