@@ -20,8 +20,9 @@ beronet_cpu_load_default_values = (80, 90)
 
 snmp_info["beronet_cpu_load"] = ( ".1.3.6.1.4.1.29886.0.11.1.1.1", [ "0" ] )
 
+
 def inventory_beronet_cpu_load(info):
-	yield "Load","beronet_cpu_load_default_values"
+	yield None,"beronet_cpu_load_default_values"
 	return
 
 def check_beronet_cpu_load(item, params, info):
@@ -39,7 +40,7 @@ def check_beronet_cpu_load(item, params, info):
 check_info["beronet_cpu_load"] = {
     "check_function"        : check_beronet_cpu_load,
     "inventory_function"    : inventory_beronet_cpu_load,
-    "service_description"   : "Beronet CPU",
+    "service_description"   : "Beronet CPU Load",
 	'has_perfdata'			: True,
     "snmp_scan_function"    : lambda oid: "berofix voip gateway" in oid(".1.3.6.1.2.1.1.1.0").lower() and oid('.1.3.6.1.4.1.29886.0.11.1.1.1.0') != None,
 }

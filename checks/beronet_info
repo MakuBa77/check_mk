@@ -19,7 +19,7 @@ snmp_info["beronet_info"] = ( ".1.3.6.1.4.1.29886.0", [ "2.0", "3.0", "4.0", "5.
 
 
 def inventory_beronet_info(info):
-	yield "Info",None
+	yield None,None
 	return
 
 def check_beronet_info(item, params, info):
@@ -35,7 +35,7 @@ def check_beronet_info(item, params, info):
 check_info["beronet_info"] = {
     "check_function"        : check_beronet_info,
     "inventory_function"    : inventory_beronet_info,
-    "service_description"   : "Beronet",
+    "service_description"   : "Beronet VoIP Gateway Info",
     "snmp_info"             : ( '.1.3.6.1.4.1.29886.0.2', [ 0 ] ),
     "snmp_scan_function"    : lambda oid: "berofix voip gateway" in oid(".1.3.6.1.2.1.1.1.0").lower() and  oid('.1.3.6.1.4.1.29886.0.2.0') != None,
 }
